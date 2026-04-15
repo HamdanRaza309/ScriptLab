@@ -1,0 +1,175 @@
+/* ===== Output Card ===== */
+.output-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  animation: fadeSlideUp var(--duration-slow) var(--ease-out) both;
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Card Header ===== */
+.output-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.output-card__title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.output-card__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.output-card__meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.output-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  background: var(--accent-subtle);
+  border-radius: 100px;
+  padding: 4px 10px;
+}
+
+.output-card__badge svg {
+  color: var(--text-accent);
+  flex-shrink: 0;
+}
+
+/* ===== Copy Button ===== */
+.copy-button {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.copy-button:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.copy-button--copied {
+  color: var(--success);
+  border-color: rgba(52, 211, 153, 0.3);
+  background: rgba(52, 211, 153, 0.08);
+}
+
+/* ===== Card Body ===== */
+.output-card__body {
+  padding: 28px 24px 32px;
+  max-width: 680px;
+}
+
+.output-card__paragraph {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.output-card__paragraph + .output-card__paragraph {
+  margin-top: 20px;
+}
+
+/* ===== Loading Skeleton ===== */
+.output-card--loading {
+  pointer-events: none;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary) 25%,
+    rgba(255, 255, 255, 0.06) 50%,
+    var(--bg-tertiary) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.skeleton--title {
+  width: 120px;
+  height: 20px;
+}
+
+.skeleton--subtitle {
+  width: 200px;
+  height: 14px;
+}
+
+.skeleton--line {
+  height: 14px;
+  margin-bottom: 12px;
+}
+
+.skeleton--full { width: 100%; }
+.skeleton--90 { width: 90%; }
+.skeleton--85 { width: 85%; }
+.skeleton--80 { width: 80%; }
+.skeleton--70 { width: 70%; }
+.skeleton--60 { width: 60%; }
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .output-card__header {
+    flex-direction: column;
+    padding: 16px 18px;
+  }
+
+  .output-card__body {
+    padding: 20px 18px 24px;
+  }
+
+  .copy-button {
+    align-self: flex-start;
+  }
+}

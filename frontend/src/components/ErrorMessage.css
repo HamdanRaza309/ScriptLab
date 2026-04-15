@@ -1,0 +1,17 @@
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: var(--error-bg);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--error);
+  font-size: 14px;
+  font-weight: 500;
+  animation: fadeSlideUp var(--duration-normal) var(--ease-out) both;
+}
+
+.error-message svg {
+  flex-shrink: 0;
+}
