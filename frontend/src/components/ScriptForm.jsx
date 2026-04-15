@@ -5,8 +5,6 @@ const TONES = [
   { label: 'Dramatic', value: 'Dramatic' },
   { label: 'Neutral', value: 'Neutral' },
   { label: 'Uplifting', value: 'Uplifting' },
-  { label: 'Humorous', value: 'Humorous' },
-  { label: 'Educational', value: 'Educational' },
 ];
 
 const LENGTHS = [

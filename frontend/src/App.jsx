@@ -14,12 +14,13 @@ export default function App() {
   const [length, setLength] = useState(1);
   const [loading, setLoading] = useState(false);
   const [script, setScript] = useState('');
+  const [scriptWordCount, setScriptWordCount] = useState(0);
   const [error, setError] = useState('');
 
   const handleGenerate = useCallback(async () => {
     setLoading(true);
     setError('');
-    setScript('');
+    setScriptWordCount(0);
 
     try {
       const res = await fetch(`${API_URL}/api/generate-script`, {
@@ -28,13 +29,17 @@ export default function App() {
         body: JSON.stringify({ idea: idea.trim(), tone, length }),
       });
 
-      const data = await res.json();
+      const contentType = res.headers.get('content-type') || '';
+      const data = contentType.includes('application/json')
+        ? await res.json()
+        : { error: await res.text() };
 
       if (!res.ok) {
         throw new Error(data.error || 'Failed to generate script');
       }
 
       setScript(data.script);
+      setScriptWordCount(Number(data.wordCount) || 0);
     } catch (err) {
       setError(
         err.name === 'TypeError'
@@ -87,7 +92,7 @@ export default function App() {
         <ErrorMessage message={error} />
 
         {/* Output */}
-        <ScriptOutput script={script} loading={loading} />
+        <ScriptOutput script={script} loading={loading} wordCount={scriptWordCount} />
       </main>
 
       <Footer />

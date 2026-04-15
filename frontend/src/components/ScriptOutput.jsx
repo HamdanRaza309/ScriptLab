@@ -1,9 +1,50 @@
+
 import { useState, useEffect, useRef, useMemo } from 'react';
 import './ScriptOutput.css';
 
-export default function ScriptOutput({ script, loading }) {
+// Parse script into blocks: { type: 'heading'|'paragraph', text: string }
+function parseScriptBlocks(script) {
+  if (!script) return [];
+  const lines = script.split(/\r?\n/);
+  const blocks = [];
+  const headingRegex = /^(Hook|Setup\/Context|Key Section \d+|Conclusion\/CTA):?\s*(.*)$/i;
+  let currentParagraph = [];
+
+  for (let line of lines) {
+    const match = line.match(headingRegex);
+    if (match) {
+      // Push any accumulated paragraph
+      if (currentParagraph.length > 0) {
+        blocks.push({ type: 'paragraph', text: currentParagraph.join(' ').trim() });
+        currentParagraph = [];
+      }
+      // Heading block
+      blocks.push({ type: 'heading', text: match[1] });
+      if (match[2] && match[2].trim()) {
+        currentParagraph.push(match[2].trim());
+      }
+    } else if (line.trim() !== '') {
+      currentParagraph.push(line.trim());
+    }
+  }
+  if (currentParagraph.length > 0) {
+    blocks.push({ type: 'paragraph', text: currentParagraph.join(' ').trim() });
+  }
+  return blocks;
+}
+
+function stripStructureHeadings(text) {
+  return String(text || '')
+    .split('\n')
+    .filter((line) => !/^(Hook|Setup\/Context|Key Section \d+|Conclusion\/CTA):?\s*$/i.test(line.trim()))
+    .join('\n')
+    .trim();
+}
+
+export default function ScriptOutput({ script, loading, wordCount: serverWordCount = 0 }) {
   const [copied, setCopied] = useState(false);
   const outputRef = useRef(null);
+  const isRefreshing = loading && Boolean(script);
 
   // Scroll to output when script appears
   useEffect(() => {
@@ -12,19 +53,15 @@ export default function ScriptOutput({ script, loading }) {
     }
   }, [script]);
 
-  // Parse script into paragraphs for better readability
-  const paragraphs = useMemo(() => {
-    if (!script) return [];
-    return script
-      .split(/\n\s*\n/)
-      .map((p) => p.trim())
-      .filter(Boolean);
-  }, [script]);
+
+  // Parse script into blocks (headings and paragraphs)
+  const blocks = useMemo(() => parseScriptBlocks(script), [script]);
 
   const wordCount = useMemo(() => {
     if (!script) return 0;
-    return script.split(/\s+/).filter(Boolean).length;
-  }, [script]);
+    if (serverWordCount > 0) return serverWordCount;
+    return stripStructureHeadings(script).split(/\s+/).filter(Boolean).length;
+  }, [script, serverWordCount]);
 
   const readTime = useMemo(() => {
     const minutes = Math.ceil(wordCount / 150);
@@ -51,7 +88,7 @@ export default function ScriptOutput({ script, loading }) {
   };
 
   // Loading skeleton
-  if (loading) {
+  if (loading && !script) {
     return (
       <div className="output-card output-card--loading" ref={outputRef}>
         <div className="output-card__header">
@@ -82,6 +119,12 @@ export default function ScriptOutput({ script, loading }) {
         <div className="output-card__title-group">
           <h2 className="output-card__title">Your Script</h2>
           <div className="output-card__meta">
+            {isRefreshing ? (
+              <span className="output-card__badge output-card__badge--loading">
+                <span className="output-card__status-dot" aria-hidden="true" />
+                Updating draft
+              </span>
+            ) : null}
             <span className="output-card__badge">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -104,6 +147,7 @@ export default function ScriptOutput({ script, loading }) {
           onClick={handleCopy}
           id="copy-script-btn"
           aria-label="Copy script to clipboard"
+          disabled={loading && !script}
         >
           {copied ? (
             <>
@@ -124,13 +168,24 @@ export default function ScriptOutput({ script, loading }) {
         </button>
       </div>
 
-      {/* Script body */}
+      {/* Script body with headings */}
       <div className="output-card__body" id="script-output">
-        {paragraphs.map((paragraph, index) => (
-          <p key={index} className="output-card__paragraph">
-            {paragraph}
-          </p>
-        ))}
+        {blocks.map((block, idx) => {
+          if (block.type === 'heading') {
+            // Style headings differently
+            let headingClass = 'script-heading';
+            if (/^Hook$/i.test(block.text)) headingClass += ' script-heading--hook';
+            else if (/^Setup\/Context$/i.test(block.text)) headingClass += ' script-heading--setup';
+            else if (/^Key Section \d+$/i.test(block.text)) headingClass += ' script-heading--key';
+            else if (/^Conclusion\/CTA$/i.test(block.text)) headingClass += ' script-heading--conclusion';
+            return (
+              <div key={idx} className={headingClass}>{block.text}</div>
+            );
+          }
+          return (
+            <p key={idx} className="output-card__paragraph">{block.text}</p>
+          );
+        })}
       </div>
     </div>
   );
