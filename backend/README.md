@@ -78,3 +78,21 @@ POST /api/generate-script
 - **Prompt design:** Prompt is dynamically built to include idea, tone, length, and word count. Follows clear requirements for script structure.
 - **Word count logic:** Video length is mapped to word count (1 min = 150, 3 min = 400, 5 min = 700, 10 min = 1300) to guide the AI.
 - **Tradeoffs:** No database or authentication for simplicity. Timeout and error handling for reliability. Minimal dependencies for fast deploy.
+
+---
+
+## Deploying to Railway
+
+1. **Push your backend code to GitHub.**
+2. **Go to [railway.app](https://railway.app/) and create a new project.**
+3. **Connect your GitHub repo and select the `backend` folder.**
+4. **Set environment variables in Railway:**
+   - `OPENAI_API_KEY` (required)
+   - `PORT` (optional, defaults to 5000)
+5. **Railway will auto-detect Node.js and deploy.**
+6. **After deploy, note your Railway backend URL.**
+7. **Update your frontend’s `VITE_API_URL` to point to this Railway URL.**
+
+_You’re now ready to serve your API from the cloud!_
+
+---
