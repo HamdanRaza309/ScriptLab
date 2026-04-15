@@ -36,7 +36,7 @@ export default function ScriptForm({ idea, tone, length, loading, onIdeaChange, 
           onChange={(e) => onIdeaChange(e.target.value)}
           rows={4}
           required
-          placeholder="Describe your YouTube video idea… e.g. 'Why most productivity advice is wrong'"
+          placeholder="Describe your video idea… e.g. 'The life and death of Cleopatra: A Tale of Power and Passion'"
           disabled={loading}
         />
       </div>

@@ -13,7 +13,7 @@ export default function Header() {
       </div>
       <a
         className="header__github"
-        href="https://github.com"
+        href="https://github.com/HamdanRaza309/ScriptLab"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="View source on GitHub"

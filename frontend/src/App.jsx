@@ -65,11 +65,11 @@ export default function App() {
             AI-Powered Script Writing
           </div>
           <h1 className="hero-title">
-            Create YouTube Scripts<br />
+            Create Scripts<br />
             <span className="hero-title__accent">in seconds, not hours.</span>
           </h1>
           <p className="hero-description">
-            Describe your video idea, pick a tone and length — get a polished,
+            Describe your video idea, pick a tone and length, get a polished,
             ready-to-record script powered by AI.
           </p>
         </section>
