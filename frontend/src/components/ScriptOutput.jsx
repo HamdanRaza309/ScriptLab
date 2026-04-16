@@ -1,5 +1,23 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
+import jsPDF from 'jspdf';
+import { saveAs } from 'file-saver';
+// Export script as PDF using jsPDF
+function exportToPDF(script) {
+  const doc = new jsPDF();
+  const lines = doc.splitTextToSize(script, 180);
+  doc.text(lines, 15, 20);
+  doc.save('script.pdf');
+}
+
+// Export script as Word (.doc) using Blob and FileSaver
+function exportToWord(script) {
+  // Convert plain text to HTML, preserving line breaks
+  const html = `<html><head><meta charset='utf-8'></head><body><pre style="font-family:inherit;">${script.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])).replace(/\n/g, '<br>')
+    }</pre></body></html>`;
+  const blob = new Blob([html], { type: 'application/msword' });
+  saveAs(blob, 'script.doc');
+}
 import './ScriptOutput.css';
 
 // Parse script into blocks: { type: 'heading'|'paragraph', text: string }
@@ -142,30 +160,50 @@ export default function ScriptOutput({ script, loading, wordCount: serverWordCou
           </div>
         </div>
 
-        <button
-          className={`copy-button ${copied ? 'copy-button--copied' : ''}`}
-          onClick={handleCopy}
-          id="copy-script-btn"
-          aria-label="Copy script to clipboard"
-          disabled={loading && !script}
-        >
-          {copied ? (
-            <>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              Copied!
-            </>
-          ) : (
-            <>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-              </svg>
-              Copy
-            </>
-          )}
-        </button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            className={`copy-button ${copied ? 'copy-button--copied' : ''}`}
+            onClick={handleCopy}
+            id="copy-script-btn"
+            aria-label="Copy script to clipboard"
+            disabled={loading && !script}
+          >
+            {copied ? (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Copied!
+              </>
+            ) : (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
+                Copy
+              </>
+            )}
+          </button>
+          <button
+            className="copy-button"
+            style={{ minWidth: 90 }}
+            onClick={() => exportToPDF(script)}
+            aria-label="Export script as PDF"
+            disabled={loading && !script}
+          >
+            Export PDF
+          </button>
+          <button
+            className="copy-button"
+            style={{ minWidth: 90 }}
+            onClick={() => exportToWord(script)}
+            aria-label="Export script as Word"
+            disabled={loading && !script}
+          >
+            Export Word
+          </button>
+        </div>
       </div>
 
       {/* Script body with headings */}
